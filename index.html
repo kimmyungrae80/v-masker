@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V-MASKER | 이명 정밀 케어</title>
+<title>V-MASKER v1.1 | 이명 정밀 케어</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;700&display=swap');
-  :root{--bg:#0a0c0f;--panel:#111318;--border:#1e2530;--accent:#00d4aa;--accent2:#ff6b35;--warn:#ffb800;--text:#c8d8e8;--dim:#4a5568;--mono:'Share Tech Mono',monospace;--sans:'Noto Sans KR',sans-serif;}
+  :root{--bg:#0a0c0f;--panel:#111318;--border:#1e2530;--accent:#00d4aa;--accent2:#ff6b35;--warn:#ffb800;--purple:#a78bfa;--text:#c8d8e8;--dim:#4a5568;--mono:'Share Tech Mono',monospace;--sans:'Noto Sans KR',sans-serif;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,170,0.015) 2px,rgba(0,212,170,0.015) 4px);pointer-events:none;z-index:999;}
@@ -14,6 +14,7 @@
   .header{display:flex;align-items:center;justify-content:space-between;padding:12px 0 20px;border-bottom:1px solid var(--border);margin-bottom:20px;}
   .logo{font-family:var(--mono);font-size:22px;letter-spacing:4px;color:var(--accent);text-shadow:0 0 20px rgba(0,212,170,0.5);}
   .logo span{color:var(--accent2);}
+  .logo sub{font-size:11px;color:var(--dim);letter-spacing:1px;}
   .status-pill{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:2px;border:1px solid var(--dim);color:var(--dim);letter-spacing:2px;transition:all 0.3s;}
   .status-pill.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px rgba(0,212,170,0.3);}
   .engine-wrap{display:flex;flex-direction:column;align-items:center;margin:24px 0;}
@@ -27,8 +28,14 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
   .rpm-display{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;margin-top:8px;transition:color 0.3s;}
   .rpm-display.active{color:var(--accent);}
+
+  /* TIMER BADGE */
+  .timer-badge{display:none;font-family:var(--mono);font-size:13px;color:var(--purple);letter-spacing:2px;margin-top:6px;animation:blink 2s ease-in-out infinite;}
+  .timer-badge.show{display:block;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+
   .tabs{display:flex;gap:1px;margin-bottom:16px;background:var(--border);border-radius:4px;padding:1px;}
-  .tab{flex:1;padding:8px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:3px;color:var(--dim);transition:all 0.2s;}
+  .tab{flex:1;padding:8px;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;color:var(--dim);transition:all 0.2s;}
   .tab.active{background:var(--panel);color:var(--accent);}
   .panel{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px;}
   .panel-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--dim);margin-bottom:14px;}
@@ -40,10 +47,39 @@
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 8px rgba(0,212,170,0.5);}
   input[type=range].orange::-webkit-slider-thumb{background:var(--accent2);box-shadow:0 0 8px rgba(255,107,53,0.5);}
   input[type=range].yellow::-webkit-slider-thumb{background:var(--warn);box-shadow:0 0 8px rgba(255,184,0,0.5);}
+  input[type=range].purple::-webkit-slider-thumb{background:var(--purple);box-shadow:0 0 8px rgba(167,139,250,0.5);}
+
+  /* NOTCH TOGGLE */
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .toggle-label{font-size:12px;color:var(--text);}
+  .toggle-desc{font-size:10px;color:var(--dim);margin-top:2px;}
+  .toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;}
+  .toggle-switch input{display:none;}
+  .toggle-track{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:background 0.3s;}
+  .toggle-thumb{position:absolute;width:18px;height:18px;background:var(--dim);border-radius:50%;top:3px;left:3px;transition:all 0.3s;}
+  .toggle-switch input:checked ~ .toggle-track{background:rgba(167,139,250,0.3);border:1px solid var(--purple);}
+  .toggle-switch input:checked ~ .toggle-thumb{background:var(--purple);left:23px;box-shadow:0 0 8px rgba(167,139,250,0.6);}
+
+  /* NOTCH INDICATOR */
+  .notch-indicator{font-family:var(--mono);font-size:10px;color:var(--purple);text-align:center;padding:6px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.2);border-radius:4px;margin-bottom:12px;display:none;}
+  .notch-indicator.show{display:block;}
+
   .freq-display{display:flex;align-items:center;justify-content:center;padding:10px;background:var(--bg);border-radius:4px;margin-bottom:14px;border:1px solid var(--border);font-family:var(--mono);}
   .freq-num{font-size:32px;color:var(--accent);text-shadow:0 0 10px rgba(0,212,170,0.4);}
   .freq-unit{font-size:14px;color:var(--dim);margin-left:6px;align-self:flex-end;padding-bottom:4px;}
+  .freq-range-note{font-size:10px;color:var(--dim);text-align:center;margin-bottom:10px;font-family:var(--mono);}
+
   canvas{width:100%;height:60px;display:block;border:1px solid var(--border);border-radius:4px;background:var(--bg);margin-bottom:12px;}
+
+  /* SLEEP TIMER */
+  .timer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+  .timer-btn{padding:10px 4px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;text-align:center;transition:all 0.2s;font-family:var(--mono);font-size:12px;color:var(--dim);}
+  .timer-btn:hover,.timer-btn.sel{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,0.05);}
+  .timer-progress{height:4px;background:var(--border);border-radius:2px;margin:8px 0;overflow:hidden;}
+  .timer-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--accent));transition:width 1s linear;width:0%;}
+  .timer-cancel{width:100%;padding:10px;background:transparent;border:1px solid var(--dim);color:var(--dim);border-radius:4px;font-family:var(--mono);font-size:11px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;display:none;}
+  .timer-cancel.show{display:block;}
+
   .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .preset-btn{padding:10px 8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;text-align:center;transition:all 0.2s;font-size:11px;color:var(--dim);}
   .preset-btn.sel{border-color:var(--accent);color:var(--accent);background:rgba(0,212,170,0.05);}
@@ -57,12 +93,17 @@
   .mml-bar{height:8px;background:var(--border);border-radius:4px;margin:8px 0;overflow:hidden;}
   .mml-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--warn));transition:width 0.5s;}
   .hidden{display:none;}
+
+  /* FADE IN INDICATOR */
+  .fadein-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:4px;}
+  .fadein-label{font-size:11px;color:var(--dim);flex:1;}
+  .fadein-select{background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;border-radius:3px;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <div class="logo">V<span>-</span>MASKER</div>
+    <div class="logo">V<span>-</span>MASKER <sub>v1.1</sub></div>
     <div class="status-pill" id="statusPill">STANDBY</div>
   </div>
   <div class="engine-wrap">
@@ -73,6 +114,11 @@
           stroke-dasharray="578" stroke-dashoffset="578" id="progressArc"
           stroke-linecap="round" transform="rotate(-90 100 100)"
           style="transition:stroke-dashoffset 0.5s;filter:drop-shadow(0 0 6px #00d4aa)"/>
+        <!-- notch ring -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#a78bfa" stroke-width="1.5"
+          stroke-dasharray="503" stroke-dashoffset="503" id="notchArc"
+          stroke-linecap="round" transform="rotate(-90 100 100)"
+          style="transition:stroke-dashoffset 0.8s;filter:drop-shadow(0 0 4px #a78bfa);opacity:0"/>
         <g id="fanGroup" style="transform-origin:100px 100px">
           <path d="M100,100 Q110,72 100,60 Q88,72 100,100" fill="#1e2530" opacity="0.8"/>
           <path d="M100,100 Q128,108 140,100 Q128,88 100,100" fill="#1e2530" opacity="0.8"/>
@@ -103,36 +149,106 @@
       </div>
     </div>
     <div class="rpm-display" id="rpmDisplay">RPM: ---</div>
+    <div class="timer-badge" id="timerBadge">⏾ --:--</div>
   </div>
+
   <canvas id="vizCanvas"></canvas>
+
   <div class="tabs">
     <div class="tab active" onclick="switchTab('sound',this)">SOUND</div>
     <div class="tab" onclick="switchTab('fingerprint',this)">이명지문</div>
     <div class="tab" onclick="switchTab('presets',this)">프리셋</div>
+    <div class="tab" onclick="switchTab('timer',this)">타이머</div>
     <div class="tab" onclick="switchTab('log',this)">LOG</div>
   </div>
+
+  <!-- SOUND TAB -->
   <div id="tab-sound">
     <div class="panel">
       <div class="panel-title">// V-ENGINE PARAMETERS</div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">마스킹 볼륨</span><span class="slider-val" id="volVal">65</span></div><input type="range" min="0" max="100" value="65" id="volSlider" oninput="updateVol(this.value)"></div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">노후도 (Roughness)</span><span class="slider-val" id="roughVal">40</span></div><input type="range" class="orange" min="0" max="100" value="40" id="roughSlider" oninput="updateRough(this.value)"></div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">먹먹함 (Low-pass)</span><span class="slider-val" id="lpVal">600 Hz</span></div><input type="range" class="orange" min="100" max="4000" value="600" id="lpSlider" oninput="updateLP(this.value)"></div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">진동 깊이 (LFO Depth)</span><span class="slider-val" id="lfoDepthVal">30</span></div><input type="range" class="yellow" min="0" max="100" value="30" id="lfoDepthSlider" oninput="updateLFODepth(this.value)"></div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">진동 속도 (LFO Rate)</span><span class="slider-val" id="lfoRateVal">1.2 Hz</span></div><input type="range" class="yellow" min="1" max="60" value="12" id="lfoRateSlider" oninput="updateLFORate(this.value)"></div>
+
+      <!-- FADE IN -->
+      <div class="fadein-row">
+        <span class="fadein-label">🌅 페이드인 (서서히 켜지기)</span>
+        <select class="fadein-select" id="fadeinSelect">
+          <option value="0">OFF</option>
+          <option value="5" selected>5초</option>
+          <option value="10">10초</option>
+          <option value="30">30초</option>
+        </select>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">마스킹 볼륨</span><span class="slider-val" id="volVal">65</span></div>
+        <input type="range" min="0" max="100" value="65" id="volSlider" oninput="updateVol(this.value)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">노후도 (Roughness)</span><span class="slider-val" id="roughVal">40</span></div>
+        <input type="range" class="orange" min="0" max="100" value="40" id="roughSlider" oninput="updateRough(this.value)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">먹먹함 (Low-pass)</span><span class="slider-val" id="lpVal">600 Hz</span></div>
+        <input type="range" class="orange" min="100" max="8000" value="600" id="lpSlider" oninput="updateLP(this.value)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">진동 깊이 (LFO Depth)</span><span class="slider-val" id="lfoDepthVal">30</span></div>
+        <input type="range" class="yellow" min="0" max="100" value="30" id="lfoDepthSlider" oninput="updateLFODepth(this.value)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">진동 속도 (LFO Rate)</span><span class="slider-val" id="lfoRateVal">1.2 Hz</span></div>
+        <input type="range" class="yellow" min="1" max="60" value="12" id="lfoRateSlider" oninput="updateLFORate(this.value)">
+      </div>
     </div>
   </div>
+
+  <!-- FINGERPRINT TAB -->
   <div id="tab-fingerprint" class="hidden">
     <div class="panel">
       <div class="panel-title">// 이명 주파수 매칭</div>
-      <div class="freq-display"><span class="freq-num" id="freqNum">4000</span><span class="freq-unit">Hz</span></div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">주파수 조절</span><span class="slider-val" id="freqVal">4000 Hz</span></div><input type="range" min="500" max="14000" value="4000" id="freqSlider" oninput="updateFreq(this.value)"></div>
-      <div style="text-align:center;margin:8px 0 14px;"><button onclick="toggleTone()" id="toneBtn" style="padding:8px 20px;background:transparent;border:1px solid #00d4aa;color:#00d4aa;border-radius:3px;font-family:var(--mono);font-size:11px;letter-spacing:2px;cursor:pointer;">▶ 이명음 재생</button></div>
+      <div class="freq-display">
+        <span class="freq-num" id="freqNum">8000</span>
+        <span class="freq-unit">Hz</span>
+      </div>
+      <div class="freq-range-note">범위: 200 Hz ~ 20,000 Hz (사격 후유증 고주파 포함)</div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">주파수 조절</span><span class="slider-val" id="freqVal">8000 Hz</span></div>
+        <input type="range" min="200" max="20000" value="8000" id="freqSlider" oninput="updateFreq(this.value)">
+      </div>
+      <div style="text-align:center;margin:8px 0 14px;">
+        <button onclick="toggleTone()" id="toneBtn" style="padding:8px 20px;background:transparent;border:1px solid #00d4aa;color:#00d4aa;border-radius:3px;font-family:var(--mono);font-size:11px;letter-spacing:2px;cursor:pointer;">▶ 이명음 재생</button>
+      </div>
+
+      <!-- NOTCH FILTER -->
+      <div class="panel-title" style="margin-top:4px;">// 노치 필터 (이명 주파수 차단)</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">🔕 노치 필터 ON/OFF</div>
+          <div class="toggle-desc">환풍기 소리에서 내 이명 주파수만 제거 → 더 정밀한 차폐</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="notchToggle" onchange="updateNotch()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <div class="notch-indicator" id="notchIndicator">⬡ NOTCH ACTIVE — <span id="notchFreqLabel">8000</span> Hz ± <span id="notchQLabel">200</span> Hz 차단 중</div>
+
+      <div class="slider-row" id="notchQRow" style="opacity:0.4;pointer-events:none;">
+        <div class="slider-label"><span class="slider-name" style="color:var(--purple)">노치 폭 (Q값)</span><span class="slider-val" style="color:var(--purple)" id="notchQVal">±200 Hz</span></div>
+        <input type="range" class="purple" min="50" max="1000" value="200" id="notchQSlider" oninput="updateNotchQ(this.value)">
+      </div>
+
       <div class="panel-title" style="margin-top:8px;">// MML 측정 (최소 차폐 레벨)</div>
-      <div class="slider-row"><div class="slider-label"><span class="slider-name">차폐 시작 지점</span><span class="slider-val" id="mmlVal">65</span></div><input type="range" min="0" max="100" value="65" id="mmlSlider" oninput="updateMML(this.value)"></div>
+      <div class="slider-row">
+        <div class="slider-label"><span class="slider-name">차폐 시작 지점</span><span class="slider-val" id="mmlVal">65</span></div>
+        <input type="range" min="0" max="100" value="65" id="mmlSlider" oninput="updateMML(this.value)">
+      </div>
       <div class="mml-bar"><div class="mml-fill" id="mmlFill" style="width:65%"></div></div>
       <button class="checkin-btn" style="margin-top:8px;" onclick="saveMML()">MML 저장하기</button>
     </div>
   </div>
+
+  <!-- PRESETS TAB -->
   <div id="tab-presets" class="hidden">
     <div class="panel">
       <div class="panel-title">// 환경 프리셋</div>
@@ -146,6 +262,33 @@
       </div>
     </div>
   </div>
+
+  <!-- TIMER TAB -->
+  <div id="tab-timer" class="hidden">
+    <div class="panel">
+      <div class="panel-title">// 수면 타이머 (자동 페이드아웃)</div>
+      <div class="timer-grid">
+        <div class="timer-btn" onclick="setTimer(15,this)">15분</div>
+        <div class="timer-btn" onclick="setTimer(30,this)">30분</div>
+        <div class="timer-btn" onclick="setTimer(60,this)">60분</div>
+        <div class="timer-btn" onclick="setTimer(90,this)">90분</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:8px;">
+        남은 시간: <span id="timerDisplay" style="color:var(--purple)">--:--</span>
+      </div>
+      <div class="timer-progress"><div class="timer-fill" id="timerFill"></div></div>
+      <button class="timer-cancel" id="timerCancelBtn" onclick="cancelTimer()">✕ 타이머 취소</button>
+      <div style="margin-top:14px;">
+        <div class="panel-title">// 페이드아웃 시간</div>
+        <div class="slider-row">
+          <div class="slider-label"><span class="slider-name" style="color:var(--purple)">서서히 꺼지는 시간</span><span class="slider-val" style="color:var(--purple)" id="fadeOutVal">2분</span></div>
+          <input type="range" class="purple" min="1" max="10" value="2" id="fadeOutSlider" oninput="updateFadeOut(this.value)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG TAB -->
   <div id="tab-log" class="hidden">
     <div class="panel">
       <div class="panel-title">// 오늘의 체크인</div>
@@ -153,41 +296,266 @@
       <ul class="log-list" id="logList"></ul>
     </div>
   </div>
+
 </div>
 <script>
-let ctx=null,bufferNode=null,gainNode=null,filterNode=null,lfoNode=null,lfoGain=null,toneOsc=null,analyser=null,running=false,fanAngle=0,fanAnim=null;
-const PRESETS={home:{vol:65,rough:40,lp:600,lfoD:30,lfoR:12},range:{vol:80,rough:85,lp:1800,lfoD:60,lfoR:28},rain:{vol:55,rough:20,lp:400,lfoD:15,lfoR:6},sleep:{vol:45,rough:10,lp:300,lfoD:8,lfoR:4},office:{vol:50,rough:25,lp:800,lfoD:20,lfoR:10},field:{vol:75,rough:65,lp:1200,lfoD:45,lfoR:20}};
-function buildNoise(a){const l=a.sampleRate*4,b=a.createBuffer(1,l,a.sampleRate),d=b.getChannelData(0);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;for(let i=0;i<l;i++){const w=Math.random()*2-1;b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)/7;b6=w*0.115926;}return b;}
+// ── AUDIO NODES ──────────────────────────────────
+let ctx=null, bufferNode=null, gainNode=null, filterNode=null,
+    lfoNode=null, lfoGain=null, notchFilter=null,
+    toneOsc=null, analyser=null,
+    running=false, fanAngle=0, fanAnim=null, toneRunning=false;
+
+// ── TIMER STATE ──────────────────────────────────
+let timerInterval=null, timerTotal=0, timerRemain=0, fadeOutMin=2;
+
+const PRESETS={
+  home:{vol:65,rough:40,lp:600,lfoD:30,lfoR:12},
+  range:{vol:80,rough:85,lp:1800,lfoD:60,lfoR:28},
+  rain:{vol:55,rough:20,lp:400,lfoD:15,lfoR:6},
+  sleep:{vol:40,rough:8,lp:280,lfoD:6,lfoR:4},
+  office:{vol:50,rough:25,lp:800,lfoD:20,lfoR:10},
+  field:{vol:75,rough:65,lp:1200,lfoD:45,lfoR:20}
+};
+
+// ── PINK NOISE ────────────────────────────────────
+function buildNoise(a){
+  const l=a.sampleRate*4,b=a.createBuffer(1,l,a.sampleRate),d=b.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<l;i++){const w=Math.random()*2-1;b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)/7;b6=w*0.115926;}
+  return b;
+}
+
+// ── ENGINE START/STOP ─────────────────────────────
+function startEngine(){
+  if(running)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)();
+  analyser=ctx.createAnalyser(); analyser.fftSize=256;
+
+  bufferNode=ctx.createBufferSource();
+  bufferNode.buffer=buildNoise(ctx); bufferNode.loop=true;
+
+  gainNode=ctx.createGain();
+  const fadeSec=parseInt(document.getElementById('fadeinSelect').value)||0;
+  if(fadeSec>0){gainNode.gain.setValueAtTime(0,ctx.currentTime);gainNode.gain.linearRampToValueAtTime(getVol(),ctx.currentTime+fadeSec);}
+  else{gainNode.gain.value=getVol();}
+
+  filterNode=ctx.createBiquadFilter(); filterNode.type='lowpass'; filterNode.frequency.value=getLPFreq();
+
+  lfoNode=ctx.createOscillator(); lfoNode.type='sine'; lfoNode.frequency.value=getLFORate();
+  lfoGain=ctx.createGain(); lfoGain.gain.value=getLFODepth();
+  lfoNode.connect(lfoGain); lfoGain.connect(gainNode.gain);
+
+  // notch filter
+  notchFilter=ctx.createBiquadFilter(); notchFilter.type='notch';
+  notchFilter.frequency.value=getNotchFreq(); notchFilter.Q.value=getNotchQ();
+
+  const notchOn=document.getElementById('notchToggle').checked;
+
+  bufferNode.connect(filterNode);
+  if(notchOn){filterNode.connect(notchFilter); notchFilter.connect(gainNode);}
+  else{filterNode.connect(gainNode);}
+  gainNode.connect(analyser); analyser.connect(ctx.destination);
+
+  bufferNode.start(); lfoNode.start();
+  running=true;
+}
+
+function stopEngine(){
+  if(!running)return;
+  try{bufferNode.stop();lfoNode.stop();if(toneOsc)toneOsc.stop();}catch(e){}
+  ctx.close(); ctx=null; toneOsc=null; notchFilter=null; toneRunning=false;
+  running=false;
+}
+
+// ── GETTERS ───────────────────────────────────────
 function getVol(){return parseFloat(document.getElementById('volSlider').value)/100*0.8;}
 function getLPFreq(){return parseFloat(document.getElementById('lpSlider').value);}
 function getLFORate(){return parseFloat(document.getElementById('lfoRateSlider').value)/10;}
 function getLFODepth(){const r=parseFloat(document.getElementById('roughSlider').value)/100,d=parseFloat(document.getElementById('lfoDepthSlider').value)/100;return getVol()*d*(0.2+r*0.6);}
-function startEngine(){if(running)return;ctx=new(window.AudioContext||window.webkitAudioContext)();analyser=ctx.createAnalyser();analyser.fftSize=256;bufferNode=ctx.createBufferSource();bufferNode.buffer=buildNoise(ctx);bufferNode.loop=true;gainNode=ctx.createGain();gainNode.gain.value=getVol();filterNode=ctx.createBiquadFilter();filterNode.type='lowpass';filterNode.frequency.value=getLPFreq();lfoNode=ctx.createOscillator();lfoNode.type='sine';lfoNode.frequency.value=getLFORate();lfoGain=ctx.createGain();lfoGain.gain.value=getLFODepth();lfoNode.connect(lfoGain);lfoGain.connect(gainNode.gain);bufferNode.connect(filterNode);filterNode.connect(gainNode);gainNode.connect(analyser);analyser.connect(ctx.destination);bufferNode.start();lfoNode.start();running=true;}
-function stopEngine(){if(!running)return;try{bufferNode.stop();lfoNode.stop();if(toneOsc)toneOsc.stop();}catch(e){}ctx.close();ctx=null;toneOsc=null;running=false;}
+function getNotchFreq(){return parseFloat(document.getElementById('freqSlider').value);}
+function getNotchQ(){
+  const bw=parseFloat(document.getElementById('notchQSlider').value);
+  const f=getNotchFreq(); return f/bw;
+}
+
+// ── UPDATERS ──────────────────────────────────────
 function updateVol(v){document.getElementById('volVal').textContent=v;if(running&&gainNode)gainNode.gain.setTargetAtTime(v/100*0.8,ctx.currentTime,0.1);updateRPM();}
 function updateRough(v){document.getElementById('roughVal').textContent=v;if(running&&lfoGain)lfoGain.gain.setTargetAtTime(getLFODepth(),ctx.currentTime,0.1);}
 function updateLP(v){document.getElementById('lpVal').textContent=v+' Hz';if(running&&filterNode)filterNode.frequency.setTargetAtTime(v,ctx.currentTime,0.1);}
 function updateLFODepth(v){document.getElementById('lfoDepthVal').textContent=v;if(running&&lfoGain)lfoGain.gain.setTargetAtTime(getLFODepth(),ctx.currentTime,0.1);}
 function updateLFORate(v){document.getElementById('lfoRateVal').textContent=(v/10).toFixed(1)+' Hz';if(running&&lfoNode)lfoNode.frequency.setTargetAtTime(v/10,ctx.currentTime,0.1);}
-function updateFreq(v){document.getElementById('freqVal').textContent=v+' Hz';document.getElementById('freqNum').textContent=v;}
+
+function updateFreq(v){
+  document.getElementById('freqVal').textContent=v+' Hz';
+  document.getElementById('freqNum').textContent=v;
+  document.getElementById('notchFreqLabel').textContent=v;
+  if(toneRunning&&toneOsc)toneOsc.frequency.value=parseFloat(v);
+  if(running&&notchFilter&&document.getElementById('notchToggle').checked)
+    notchFilter.frequency.setTargetAtTime(parseFloat(v),ctx.currentTime,0.05);
+}
+
 function updateMML(v){document.getElementById('mmlVal').textContent=v;document.getElementById('mmlFill').style.width=v+'%';}
-function updateRPM(){const v=parseFloat(document.getElementById('volSlider').value);document.getElementById('rpmDisplay').textContent=running?'RPM: '+Math.round(v*28+200):'RPM: ---';document.getElementById('progressArc').style.strokeDashoffset=running?578*(1-v/100):578;}
-function toggleEngine(){if(!running){startEngine();updateRPM();document.getElementById('engineBtn').classList.add('running');document.getElementById('btnLabel').textContent='STOP';document.getElementById('statusPill').textContent='RUNNING';document.getElementById('statusPill').classList.add('active');document.getElementById('rpmDisplay').classList.add('active');startFan();startViz();}else{stopEngine();updateRPM();document.getElementById('engineBtn').classList.remove('running');document.getElementById('btnLabel').textContent='START';document.getElementById('statusPill').textContent='STANDBY';document.getElementById('statusPill').classList.remove('active');document.getElementById('rpmDisplay').classList.remove('active');stopFan();clearViz();}}
+
+function updateNotch(){
+  const on=document.getElementById('notchToggle').checked;
+  document.getElementById('notchIndicator').classList.toggle('show',on);
+  document.getElementById('notchQRow').style.opacity=on?'1':'0.4';
+  document.getElementById('notchQRow').style.pointerEvents=on?'auto':'none';
+  // update notch arc visual
+  const arc=document.getElementById('notchArc');
+  arc.style.opacity=on?'1':'0';
+  if(on){
+    const pct=Math.min((getNotchFreq()-200)/(20000-200),1);
+    arc.style.strokeDashoffset=503*(1-pct*0.4);
+  }
+  // rebuild graph if running (reconnect nodes)
+  if(running){stopEngine();startEngine();startFan();startViz();}
+}
+
+function updateNotchQ(v){
+  document.getElementById('notchQVal').textContent='±'+v+' Hz';
+  document.getElementById('notchQLabel').textContent=v;
+  if(running&&notchFilter&&document.getElementById('notchToggle').checked)
+    notchFilter.Q.setTargetAtTime(getNotchQ(),ctx.currentTime,0.05);
+}
+
+function updateFadeOut(v){document.getElementById('fadeOutVal').textContent=v+'분';fadeOutMin=parseInt(v);}
+
+function updateRPM(){
+  const v=parseFloat(document.getElementById('volSlider').value);
+  document.getElementById('rpmDisplay').textContent=running?'RPM: '+Math.round(v*28+200):'RPM: ---';
+  document.getElementById('progressArc').style.strokeDashoffset=running?578*(1-v/100):578;
+}
+
+// ── ENGINE TOGGLE ─────────────────────────────────
+function toggleEngine(){
+  if(!running){
+    startEngine(); updateRPM();
+    document.getElementById('engineBtn').classList.add('running');
+    document.getElementById('btnLabel').textContent='STOP';
+    document.getElementById('statusPill').textContent='RUNNING';
+    document.getElementById('statusPill').classList.add('active');
+    document.getElementById('rpmDisplay').classList.add('active');
+    startFan(); startViz();
+  } else {
+    cancelTimer();
+    stopEngine(); updateRPM();
+    document.getElementById('engineBtn').classList.remove('running');
+    document.getElementById('btnLabel').textContent='START';
+    document.getElementById('statusPill').textContent='STANDBY';
+    document.getElementById('statusPill').classList.remove('active');
+    document.getElementById('rpmDisplay').classList.remove('active');
+    stopFan(); clearViz();
+  }
+}
+
+// ── FAN ───────────────────────────────────────────
 function startFan(){if(fanAnim)return;(function s(){fanAngle=(fanAngle+parseFloat(document.getElementById('volSlider').value)/100*6+1)%360;const f=document.getElementById('fanGroup');f.style.transform='rotate('+fanAngle+'deg)';f.style.transformOrigin='100px 100px';fanAnim=requestAnimationFrame(s);})();}
 function stopFan(){if(fanAnim){cancelAnimationFrame(fanAnim);fanAnim=null;}document.getElementById('fanGroup').style.transform='rotate(0deg)';}
-const canvas=document.getElementById('vizCanvas');const dpr=window.devicePixelRatio||1;canvas.width=canvas.offsetWidth*dpr;canvas.height=60*dpr;const ctx2d=canvas.getContext('2d');let vizAnim=null;
+
+// ── VISUALIZER ────────────────────────────────────
+const canvas=document.getElementById('vizCanvas');
+const dpr=window.devicePixelRatio||1;
+canvas.width=canvas.offsetWidth*dpr; canvas.height=60*dpr;
+const ctx2d=canvas.getContext('2d');
+let vizAnim=null;
 function startViz(){if(vizAnim)return;(function d(){if(!analyser)return;const W=canvas.width,H=canvas.height,arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(arr);ctx2d.fillStyle='#0a0c0f';ctx2d.fillRect(0,0,W,H);const bw=W/arr.length;for(let i=0;i<arr.length;i++){const h=arr[i]/255*H,g=ctx2d.createLinearGradient(0,H-h,0,H);g.addColorStop(0,'rgba(0,212,170,0.8)');g.addColorStop(1,'rgba(0,212,170,0.1)');ctx2d.fillStyle=g;ctx2d.fillRect(i*bw,H-h,bw-1,h);}vizAnim=requestAnimationFrame(d);})();}
 function clearViz(){if(vizAnim){cancelAnimationFrame(vizAnim);vizAnim=null;}ctx2d.fillStyle='#0a0c0f';ctx2d.fillRect(0,0,canvas.width,canvas.height);ctx2d.strokeStyle='#1e2530';ctx2d.lineWidth=1;ctx2d.beginPath();ctx2d.moveTo(0,canvas.height/2);ctx2d.lineTo(canvas.width,canvas.height/2);ctx2d.stroke();}
 clearViz();
-let toneRunning=false;
-function toggleTone(){const btn=document.getElementById('toneBtn');if(!toneRunning){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();toneOsc=ctx.createOscillator();const tg=ctx.createGain();toneOsc.type='sine';toneOsc.frequency.value=parseFloat(document.getElementById('freqSlider').value);tg.gain.value=0.15;toneOsc.connect(tg);tg.connect(ctx.destination);toneOsc.start();toneRunning=true;btn.textContent='■ 이명음 정지';btn.style.borderColor='var(--accent2)';btn.style.color='var(--accent2)';}else{try{toneOsc.stop();}catch(e){}toneRunning=false;toneOsc=null;btn.textContent='▶ 이명음 재생';btn.style.borderColor='var(--accent)';btn.style.color='var(--accent)';}}
-document.getElementById('freqSlider').addEventListener('input',function(){if(toneRunning&&toneOsc)toneOsc.frequency.value=parseFloat(this.value);});
-function applyPreset(name,el){document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');const p=PRESETS[name];document.getElementById('volSlider').value=p.vol;updateVol(p.vol);document.getElementById('roughSlider').value=p.rough;updateRough(p.rough);document.getElementById('lpSlider').value=p.lp;updateLP(p.lp);document.getElementById('lfoDepthSlider').value=p.lfoD;updateLFODepth(p.lfoD);document.getElementById('lfoRateSlider').value=p.lfoR;updateLFORate(p.lfoR);}
+
+// ── TONE OSC ──────────────────────────────────────
+function toggleTone(){
+  const btn=document.getElementById('toneBtn');
+  if(!toneRunning){
+    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
+    toneOsc=ctx.createOscillator();
+    const tg=ctx.createGain(); toneOsc.type='sine';
+    toneOsc.frequency.value=getNotchFreq(); tg.gain.value=0.12;
+    toneOsc.connect(tg); tg.connect(ctx.destination);
+    toneOsc.start(); toneRunning=true;
+    btn.textContent='■ 이명음 정지'; btn.style.borderColor='var(--accent2)'; btn.style.color='var(--accent2)';
+  } else {
+    try{toneOsc.stop();}catch(e){} toneRunning=false; toneOsc=null;
+    btn.textContent='▶ 이명음 재생'; btn.style.borderColor='var(--accent)'; btn.style.color='var(--accent)';
+  }
+}
+
+// ── SLEEP TIMER ───────────────────────────────────
+function setTimer(minutes, el){
+  if(!running){alert('먼저 엔진을 START 해주세요!');return;}
+  cancelTimer();
+  document.querySelectorAll('.timer-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  timerTotal=minutes*60; timerRemain=timerTotal;
+  document.getElementById('timerCancelBtn').classList.add('show');
+  document.getElementById('timerBadge').classList.add('show');
+  timerInterval=setInterval(timerTick,1000);
+  timerTick();
+}
+
+function timerTick(){
+  timerRemain--;
+  const m=Math.floor(timerRemain/60),s=timerRemain%60;
+  const label=m.toString().padStart(2,'0')+':'+s.toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent=label;
+  document.getElementById('timerBadge').textContent='⏾ '+label;
+  const pct=(timerTotal-timerRemain)/timerTotal*100;
+  document.getElementById('timerFill').style.width=pct+'%';
+
+  // fade out phase
+  const fadeSeconds=fadeOutMin*60;
+  if(timerRemain<=fadeSeconds&&running&&gainNode){
+    const targetVol=timerRemain<=0?0:getVol()*(timerRemain/fadeSeconds);
+    gainNode.gain.setTargetAtTime(Math.max(0,targetVol),ctx.currentTime,0.5);
+  }
+  if(timerRemain<=0){
+    clearInterval(timerInterval); timerInterval=null;
+    setTimeout(()=>{if(running)toggleEngine();},1000);
+    document.getElementById('timerBadge').classList.remove('show');
+    document.getElementById('timerCancelBtn').classList.remove('show');
+  }
+}
+
+function cancelTimer(){
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  document.getElementById('timerDisplay').textContent='--:--';
+  document.getElementById('timerFill').style.width='0%';
+  document.getElementById('timerBadge').classList.remove('show');
+  document.getElementById('timerCancelBtn').classList.remove('show');
+  document.querySelectorAll('.timer-btn').forEach(b=>b.classList.remove('sel'));
+  // restore volume
+  if(running&&gainNode) gainNode.gain.setTargetAtTime(getVol(),ctx.currentTime,0.3);
+}
+
+// ── PRESETS ───────────────────────────────────────
+function applyPreset(name,el){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('sel')); el.classList.add('sel');
+  const p=PRESETS[name];
+  document.getElementById('volSlider').value=p.vol; updateVol(p.vol);
+  document.getElementById('roughSlider').value=p.rough; updateRough(p.rough);
+  document.getElementById('lpSlider').value=p.lp; updateLP(p.lp);
+  document.getElementById('lfoDepthSlider').value=p.lfoD; updateLFODepth(p.lfoD);
+  document.getElementById('lfoRateSlider').value=p.lfoR; updateLFORate(p.lfoR);
+}
+
+// ── LOG ───────────────────────────────────────────
 const logs=[];
-function doCheckin(){const mml=document.getElementById('mmlSlider').value,now=new Date(),t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'),d=(now.getMonth()+1)+'/'+(now.getDate());logs.unshift({time:d+' '+t,mml,note:'MML '+mml});renderLogs();}
-function saveMML(){alert('MML '+document.getElementById('mmlSlider').value+' 저장 완료\nPhase 2에서 Supabase DB 연동 예정');}
+function doCheckin(){
+  const mml=document.getElementById('mmlSlider').value,now=new Date();
+  const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const d=(now.getMonth()+1)+'/'+(now.getDate());
+  logs.unshift({time:d+' '+t,mml,note:'MML '+mml}); renderLogs();
+}
+function saveMML(){alert('MML '+document.getElementById('mmlSlider').value+' 저장 완료\nPhase 2 Supabase 연동 예정');}
 function renderLogs(){document.getElementById('logList').innerHTML=logs.slice(0,8).map(l=>`<li class="log-item"><span class="log-time">${l.time}</span><span class="log-note">${l.note}</span><span class="log-level">Lv.${l.mml}</span></li>`).join('');}
-function switchTab(name,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');['sound','fingerprint','presets','log'].forEach(t=>{const e=document.getElementById('tab-'+t);if(e)e.classList.toggle('hidden',t!==name);});}
+
+// ── TABS ──────────────────────────────────────────
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  ['sound','fingerprint','presets','timer','log'].forEach(t=>{const e=document.getElementById('tab-'+t);if(e)e.classList.toggle('hidden',t!==name);});
+}
+
+// ── INIT ──────────────────────────────────────────
 logs.push({time:'04/14 08:30',mml:62,note:'기상 직후'},{time:'04/13 22:10',mml:71,note:'취침 전'});
 renderLogs();
 </script>
